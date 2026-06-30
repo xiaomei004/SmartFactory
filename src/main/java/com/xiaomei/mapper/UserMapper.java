@@ -38,4 +38,7 @@ public interface UserMapper {
 
     @Update("UPDATE t_user SET flag = 1, update_time = NOW(), update_userid = #{updateUserid} WHERE id = #{id}")
     int delete(@Param("id") Integer id, @Param("updateUserid") Integer updateUserid);
+
+    @Update("UPDATE t_user SET user_passwd = #{userPasswd}, update_time = NOW() WHERE id = #{id}")
+    int updatePassword(User user);
 }

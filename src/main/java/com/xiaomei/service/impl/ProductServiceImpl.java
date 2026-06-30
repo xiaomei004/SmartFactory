@@ -20,9 +20,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageObject<Product> queryList(BaseQuery query) {
         Integer factoryId = query.getFactoryId();
-        if (factoryId == null) {
-            return PageObject.error("工厂ID不能为空");
-        }
+        if (factoryId == null) return PageObject.error("工厂ID不能为空");
         int offset = (query.getPageNum() - 1) * query.getPageSize();
         List<Product> list = productMapper.selectList(factoryId, offset, query.getPageSize());
         Long total = productMapper.selectCount(factoryId);
@@ -45,21 +43,26 @@ public class ProductServiceImpl implements ProductService {
         if (product.getFactoryId() == null) {
             return error("工厂ID不能为空");
         }
+        // 同工厂产品名唯一
+        Product exist = productMapper.selectByNameAndFactory(product.getProductName(), product.getFactoryId());
+        if (exist != null) {
+            return error("产品名称已存在");
+        }
         productMapper.insert(product);
         return success("添加成功");
     }
 
     @Override
     public Map<String, String> edit(Product product) {
-        if (product.getId() == null) {
-            return error("产品ID不能为空");
-        }
-        // 先查已有数据，只更新非空字段，防止 NOT NULL 列被 null 覆盖
+        if (product.getId() == null) return error("产品ID不能为空");
         Product existing = productMapper.selectById(product.getId());
-        if (existing == null) {
-            return error("产品不存在");
-        }
+        if (existing == null) return error("产品不存在");
         if (product.getProductName() != null && !product.getProductName().trim().isEmpty()) {
+            // 同工厂产品名唯一（排除自身）
+            Product dup = productMapper.selectByNameAndFactory(product.getProductName(), existing.getFactoryId());
+            if (dup != null && !dup.getId().equals(product.getId())) {
+                return error("产品名称已存在");
+            }
             existing.setProductName(product.getProductName());
         }
         if (product.getProductNum() != null && !product.getProductNum().trim().isEmpty()) {
@@ -75,15 +78,15 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Map<String, String> delete(Integer id, Integer updateUserid) {
+        // 校验关联订单
+        int orderCount = productMapper.countOrdersByProductId(id);
+        if (orderCount > 0) {
+            return error("该产品存在" + orderCount + "个关联订单，不可删除");
+        }
         productMapper.delete(id, updateUserid);
         return success("删除成功");
     }
 
-    private Map<String, String> success(String msg) {
-        return Map.of("status", "ok", "msg", msg);
-    }
-
-    private Map<String, String> error(String msg) {
-        return Map.of("status", "error", "msg", msg);
-    }
+    private Map<String, String> success(String msg) { return Map.of("status", "ok", "msg", msg); }
+    private Map<String, String> error(String msg) { return Map.of("status", "error", "msg", msg); }
 }

@@ -3,8 +3,10 @@ package com.xiaomei.service.impl;
 import com.xiaomei.common.base.BaseQuery;
 import com.xiaomei.common.base.PageObject;
 import com.xiaomei.common.constant.StatusEnum;
+import com.xiaomei.entity.EquipmentProduct;
 import com.xiaomei.entity.ProductPlan;
 import com.xiaomei.entity.ProductSchedule;
+import com.xiaomei.mapper.EquipmentProductMapper;
 import com.xiaomei.mapper.ProductPlanMapper;
 import com.xiaomei.mapper.ProductScheduleMapper;
 import com.xiaomei.service.ScheduleService;
@@ -15,13 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class
-ScheduleServiceImpl implements ScheduleService {
+public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
     private ProductScheduleMapper scheduleMapper;
     @Autowired
     private ProductPlanMapper planMapper;
+    @Autowired
+    private EquipmentProductMapper equipmentProductMapper;
 
     @Override
     public PageObject<ProductSchedule> queryList(BaseQuery query) {
@@ -48,7 +51,6 @@ ScheduleServiceImpl implements ScheduleService {
         schedule.setScheduleStatus(StatusEnum.SCHEDULE_NOT_STARTED);
         scheduleMapper.insert(schedule);
 
-        // 如果计划未启动则自动启动
         ProductPlan plan = planMapper.selectById(schedule.getPlanId());
         if (plan != null && plan.getPlanStatus() == StatusEnum.PLAN_NOT_STARTED) {
             plan.setPlanStatus(StatusEnum.PLAN_STARTED);
@@ -85,6 +87,10 @@ ScheduleServiceImpl implements ScheduleService {
     public Map<String, String> assignEquipment(Integer id, Integer equipmentId, Integer updateUserid) {
         ProductSchedule schedule = scheduleMapper.selectById(id);
         if (schedule == null) return error("工单不存在");
+        // 校验设备是否可生产该产品
+        List<EquipmentProduct> eps = equipmentProductMapper.selectByEquipmentId(equipmentId);
+        boolean canProduce = eps.stream().anyMatch(ep -> ep.getProductId().equals(schedule.getProductId()));
+        if (!canProduce) return error("该设备不可生产此产品，请选择可生产该产品的设备");
         schedule.setEquipmentId(equipmentId);
         schedule.setUpdateUserid(updateUserid);
         scheduleMapper.update(schedule);
@@ -93,6 +99,9 @@ ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Map<String, String> delete(Integer id, Integer updateUserid) {
+        ProductSchedule schedule = scheduleMapper.selectById(id);
+        if (schedule == null) return error("工单不存在");
+        if (schedule.getScheduleStatus() != StatusEnum.SCHEDULE_NOT_STARTED) return error("只能删除未开始的工单");
         scheduleMapper.delete(id, updateUserid);
         return success("删除成功");
     }

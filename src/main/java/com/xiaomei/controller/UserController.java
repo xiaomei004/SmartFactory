@@ -29,4 +29,9 @@ public class UserController extends BaseController {
         }
         return userService.register(user);
     }
+
+    @PostMapping("/logout")
+    public Map<String, String> logout() {
+        return userService.logout();
+    }
 }

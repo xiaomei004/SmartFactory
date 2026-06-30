@@ -35,4 +35,11 @@ public interface ProductMapper {
     @Update("UPDATE t_product SET flag = 1, update_time = NOW(), update_userid = #{updateUserid} " +
             "WHERE id = #{id}")
     int delete(@Param("id") Integer id, @Param("updateUserid") Integer updateUserid);
+
+    @Select("SELECT * FROM t_product WHERE product_name = #{productName} AND factory_id = #{factoryId} AND flag = 0")
+    Product selectByNameAndFactory(@Param("productName") String productName, @Param("factoryId") Integer factoryId);
+
+    @Select("SELECT COUNT(*) FROM t_product_order WHERE product_id = #{productId} AND flag = 0 " +
+            "AND order_status IN (10,20,40)")
+    int countOrdersByProductId(@Param("productId") Integer productId);
 }

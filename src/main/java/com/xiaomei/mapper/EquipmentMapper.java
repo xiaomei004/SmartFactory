@@ -45,4 +45,11 @@ public interface EquipmentMapper {
     @Update("UPDATE t_equipment SET flag = 1, update_time = NOW(), update_userid = #{updateUserid} " +
             "WHERE id = #{id}")
     int delete(@Param("id") Integer id, @Param("updateUserid") Integer updateUserid);
+
+    @Select("SELECT * FROM t_equipment WHERE equipment_seq = #{seq} AND factory_id = #{factoryId} AND flag = 0 LIMIT 1")
+    Equipment selectBySeqAndFactory(@Param("seq") String seq, @Param("factoryId") Integer factoryId);
+
+    @Select("SELECT COUNT(*) FROM t_product_schedule WHERE equipment_id = #{equipmentId} " +
+            "AND flag = 0 AND schedule_status IN (10,20)")
+    int countActiveSchedulesByEquipment(@Param("equipmentId") Integer equipmentId);
 }

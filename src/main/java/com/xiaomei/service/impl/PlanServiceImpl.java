@@ -83,6 +83,9 @@ public class PlanServiceImpl implements PlanService {
 
     @Override
     public Map<String, String> delete(Integer id, Integer updateUserid) {
+        ProductPlan plan = planMapper.selectById(id);
+        if (plan == null) return error("计划不存在");
+        if (plan.getPlanStatus() == StatusEnum.PLAN_STARTED) return error("已启动的计划不可删除");
         planMapper.delete(id, updateUserid);
         return success("删除成功");
     }
