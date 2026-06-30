@@ -1,8 +1,19 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# ===== Backend =====
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+!backend/**/src/main/**/target/
+!backend/**/src/test/**/target/
+
+# ===== Frontend =====
+frontend/node_modules/
+frontend/dist/
+
+# ===== IDE =====
+.idea
+*.iws
+*.iml
+*.ipr
+.vscode/
 
 ### STS ###
 .apt_generated
@@ -13,12 +24,6 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -28,6 +33,3 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### VS Code ###
-.vscode/
