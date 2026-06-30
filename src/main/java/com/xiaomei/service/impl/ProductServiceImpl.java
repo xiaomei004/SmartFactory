@@ -54,7 +54,22 @@ public class ProductServiceImpl implements ProductService {
         if (product.getId() == null) {
             return error("产品ID不能为空");
         }
-        productMapper.update(product);
+        // 先查已有数据，只更新非空字段，防止 NOT NULL 列被 null 覆盖
+        Product existing = productMapper.selectById(product.getId());
+        if (existing == null) {
+            return error("产品不存在");
+        }
+        if (product.getProductName() != null && !product.getProductName().trim().isEmpty()) {
+            existing.setProductName(product.getProductName());
+        }
+        if (product.getProductNum() != null && !product.getProductNum().trim().isEmpty()) {
+            existing.setProductNum(product.getProductNum());
+        }
+        if (product.getProductImgUrl() != null) {
+            existing.setProductImgUrl(product.getProductImgUrl());
+        }
+        existing.setUpdateUserid(product.getUpdateUserid());
+        productMapper.update(existing);
         return success("修改成功");
     }
 
