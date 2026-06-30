@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class ScheduleServiceImpl implements ScheduleService {
+public class
+ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
     private ProductScheduleMapper scheduleMapper;
