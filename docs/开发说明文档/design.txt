@@ -1,0 +1,194 @@
+密级：秘密
+文件编号：D00-000000
+东软智能制造云平台
+概要设计报告
+东软睿道教育信息技术有限公司
+(版权所有，翻版必究)
+更改履历
+状态：新建、增加、修改、删除。
+引言
+编制目的
+为开发人员提供明确的需求方案、流程设计、数据库设计、包及类结构时间，以明确开发思想。
+术语表
+参考资料
+总体设计
+软件体系结构
+系统技术构架
+ 前端技术架构
+RequireJs + Jquery + ArtTemplate + BootStrap
+ 后端技术架构
+Springmvc4.0 + mybatis + mysql
+系统开发环境
+Windows
+系统设计
+前端页面设计
+ 简介
+本系统前端架构采用RequireJs作为模块化工具，Jquery作为整体逻辑显示框架，ArtTemplate作为模板渲染工具，bootStrap 3.0作为Ui框架，另外使用gulp作为项目构建工具在node环境下进行开发、测试以及发布。CSS部分使用Less作为预处理工具。
+ 公共代码封装
+本系统前端模块公共代码被统一封装至Common.js中，主要包括ajax封装、数据处理方法封装、ArtTemplate封装、文件上传封装、页面整体框架封装、分页模块封装、对话框、确认框、提示框封装。
+业务模块加载统一由main.js处理，开发中只需要在对应业务模块目录下新建同名业务模块html、js、less文件即可实现页面渲染。
+后端代码设计
+ 公共代码设计
+功能说明
+工具类所在包com.neuedu.tools提供一些系统的工具类使用
+包括json转换、文件上传、生成序列号、获取系统配置等
+类图
+产品管理
+功能说明
+实现产品的图片上传、添加、修改、删除，查询列表功能
+业务流程图
+类图
+时序图
+相关数据表
+T_product表
+设备管理
+功能说明
+实现设备的图片上传、添加、修改、删除，查询列表功能
+业务流程图
+类图
+时序图
+相关数据表
+产品计划管理
+功能说明
+实现产品计划的添加、修改、删除，查询列表功能
+业务流程图
+类图
+时序图
+相关数据表
+生产调度管理
+功能说明
+实现生产调度的添加、修改、删除，查询列表功能
+业务流程图
+类图
+时序图
+相关数据表
+代码结构
+主要包的功能说明
+base包中放置一些基础的功能类
+extent包中的类继承beans包中实体bean用于扩展查询使用
+query包中的类是查询时使用包括定义一些基本的查询条件和分页信息
+constant包的中类定义一些常量类，如状态值的说明
+tools包中定义一些工具类
+config为配置文件所在目录
+主要功能类说明
+BaseController控制器父类主要设置当前用户与工厂id
+BaseQuery查询query的父类主要设置分页数据
+PageObject前端页面接口类
+ConfigUtil 读取baseconfig.properties文件内容
+FileUploadUtil 文件上传
+JacksonUtil  json转换
+PrimaryGenerater 生成序列号
+代码说明
+前端接口类
+          com.neuedu.base.PageObject
+主要定义一些前端接口数据以Map方式实现最终生成一组json数据
+查询代码
+查询时的条件要全部在query对象中定义，query对象会继承BaseQuery用于分页查询
+前端要将查询的表单内容封装成一组json字符串提交到后台用query对象接收，
+数据不能为空，如果查询条件为空要提交一个空的json对象”{}”
+Service以query对象为查询条件进行分页或不分页查询
+返回前台如果是多条记录就放到PageObject中的dataList中
+如果只是查询是单条件记录可以放到PageObject中的formData中主要是编辑时使用,最后将PageObject对象转成json格式返回前端
+添加、修改数据
+前端将表单数据封装成json提交到后端以后用bean对象接收，调用Service方法以后
+判断id是否为空，如果为空就执行添加操作，否则执行修改操作,将结果返回前端
+json格式为{“status”:””,”msg”:””}
+删除数据
+        前端将要删除的数据id封装成json格式{“id”:””}提交到后端，用bean对象接收调用Service删		除方法，将删除结果返回前端
+json格式为{“status”:””,”msg”:””}
+上传文件
+上传文件使用com.neuedu.tools.FileUploadUtil类
+前端异步提交以后调用此方法并将文件保存的地址返回到前端
+json格式为{“status”:””,”msg”:”文件相对地址”}
+其他说明
+1、目前后端代码只接收post方式提交的数据，并将json对象转为json字符串提交
+2、在拦截器com.neuedu.interceptor.HandlerInterceptorAdapter中做了模拟登录的操作并使用了session方式，后期需要更改实现方式，比如用cookie
+3、用户登录后并设置工厂id，所有操作基本条件最是以工厂ID为基础
+
+=== TABLES ===
+
+--- Table 1 ---
+序号 | 版本 | 更改时间 | 更改人 | 更改章节 | 状态 | 更改描述
+1 | V1.0 | 2018-2-27 | 曹飞宇 |  | 新建 | 
+ |  | 2018-3-7 | 汪伟 |  | 新建 | 
+ |  |  |  |  |  | 
+
+--- Table 2 ---
+词汇名称 | 词汇含义 | 备注
+ |  | 
+ |  | 
+ |  | 
+
+--- Table 3 ---
+类名 | 功能
+ConfigUtil | 取配置文件内容
+FileDownloadUtil | 文件下载
+FileUploadUtil | 文件上传
+JacksonUtil | JSON字符处理
+LogImhic | LOG4J日志
+MD5Util | 字符串MD5加密
+PrimaryGenerater | 生产序列号
+StringUtil | 字符串工具
+
+--- Table 4 ---
+Field | Type | Comment
+id | int(11) NOT NULL | ID标识
+flag | int(11) NULL | 有效标识 0：有效 1：无效
+create_time | datetime NULL | 创建时间
+create_userid | int(11) NULL | 创建人ID
+update_time | datetime NULL | 修改时间
+update_userid | int(11) NULL | 修改人ID
+product_num | varchar(200) NOT NULL | 产品编号
+product_name | varchar(300) NOT NULL | 产品名称
+product_img_url | varchar(300) NULL | 产品图片所在目录
+factory_id | int(11) NOT NULL | 工厂ID
+
+--- Table 5 ---
+Field | Type | Comment
+id | int(11) NOT NULL | ID标识
+flag | int(11) NULL | 有效标识 0：有效 1：失效
+create_time | datetime NULL | 创建时间
+create_userid | int(11) NULL | 创建人ID
+update_time | datetime NULL | 修改时间
+update_userid | int(11) NULL | 修改人ID
+equipment_seq | varchar(200) NOT NULL | 设备序号
+equipment_name | varchar(300) NULL | 设备名称
+equipment_img_url | varchar(300) NULL | 设备图片
+equipment_status | int(11) NULL | 设备状态 10：启用 20：停用 30：故障
+factory_id | int(11) NOT NULL | 工厂ID
+
+--- Table 6 ---
+Field | Type | Comment
+id | int(11) NOT NULL | ID标识
+flag | int(11) NULL | 有效标识 0：有效 1：无效
+create_time | datetime NULL | 创建时间
+create_userid | int(11) NULL | 创建人ID
+update_time | datetime NULL | 修改时间
+update_userid | int(11) NULL | 修改人ID
+plan_seq | varchar(200) NULL | 计划编号
+order_id | int(11) NOT NULL | 订单ID
+product_id | int(11) NOT NULL | 产品ID
+plan_count | int(11) NULL | 计划数量
+delivery_date | date NULL | 交货日期
+plan_start_date | date NULL | 计划开始日期
+plan_end_date | date NULL | 计划结束日期
+plan_status | int(11) NULL | 计划状态 10：未启动 20：已启动 30：已完成
+factory_id | int(11) NOT NULL | 工厂ID
+
+--- Table 7 ---
+Field | Type | Comment
+id | int(11) NOT NULL | ID标识
+flag | int(11) NULL | 有效标识 0：有效 1：无效
+create_time | datetime NULL | 创建时间
+create_userid | int(11) NULL | 创建人ID
+update_time | datetime NULL | 修改时间
+update_userid | int(11) NULL | 修改人ID
+schedule_seq | varchar(200) NULL | 工单编号
+schedule_count | int(11) NULL | 工单数量
+schedule_status | int(11) NOT NULL | 工单状态 10：未开始 20：生产中 30：已完成
+plan_id | int(11) NOT NULL | 计划ID
+product_id | int(11) NOT NULL | 产品ID
+equipment_id | int(11) NOT NULL | 设备ID
+start_date | date NULL | 开始日期
+end_date | date NULL | 结束日期
+factory_id | int(11) NOT NULL | 工厂ID
